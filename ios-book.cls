@@ -42,7 +42,7 @@
 %% Bug fixes and changes:
 %% 2006.09.27 - start 
 
-\def\iosfmt@version{2006/09/27}
+\def\iosfmt@version{2019/06/11}
 
 \NeedsTeXFormat{LaTeX2e}[1995/12/01]
 \ProvidesClass{ios-book}
@@ -177,6 +177,17 @@
 \fi
 
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% frontmatter
+\renewenvironment{frontmatter}{%
+    \pagenumbering{roman}%
+    \setcounter{page}{5}%
+  }{%
+    \mainmatter
+  }
+
+\newenvironment{abstract}{\chapter*{Abstract}}{}
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% address, maketitle
 
 \def\subtitle#1{\gdef\@subtitle{#1}}
@@ -269,7 +280,8 @@
 \def\@makechapterhead#1{%
   \vspace*{84\p@}%
   \bgroup
-    \centering%
+    %\centering
+    \setlength\parindent{0\p@}
     \bfseries
     \interlinepenalty\@M
     \ifappend
@@ -286,14 +298,17 @@
     {\LARGE #1\par}
   \egroup
   \vskip 24\p@ plus 12\p@
-  \thispagestyle{copyright}
+  %\thispagestyle{copyright}
+  \thispagestyle{plain}
 }
 
 \def\@makeschapterhead#1{%
   \vspace*{84\p@}%
   \markboth{#1}{#1}
   \bgroup
-    \centering\bfseries
+    %\centering
+    \setlength\parindent{0\p@}
+    \bfseries
     \interlinepenalty\@M
     \Large #1\par
   \egroup
@@ -327,6 +342,19 @@
                                        {-1em}%
                                       {\normalsize\itshape}}
 
+\xdef\last@chapt@mark@title{}
+\xdef\last@sect@mark@title{}
+\xdef\sect@level@section{section}
+\let\@sect@sav\@sect
+\def\@sect#1#2#3#4#5#6[#7]#8{%
+  \@sect@sav{#1}{#2}{#3}{#4}{#5}{#6}[#7]{#8}%
+  \edef\sect@level@name{#1}%
+  \ifx\sect@level@name\sect@level@section
+    \xdef\last@sect@mark@title{#7}%
+  \fi
+  \chaptermark{\last@chapt@mark@title}%
+  }
+
 % Format for the counter:
 \def\@seccntformat#1{{\csname the#1\endcsname.\enspace}}
 
@@ -339,8 +367,20 @@
 \def\ps@headings{\let\@mkboth\@gobbletwo%
       \let\@oddfoot\@empty%
       \let\@evenfoot\@empty%
-      \def\@evenhead{\runninghead@size\rlap{\pagenumber@size\thepage}\hfill\leftmark\hfill}%
-      \def\@oddhead{\runninghead@size\hfill\rightmark\hfill\llap{\pagenumber@size\thepage}}%
+      %\def\@evenhead{\runninghead@size\rlap{\pagenumber@size\thepage}\hfill\leftmark\hfill}%
+      %\def\@oddhead{\runninghead@size\hfill\rightmark\hfill\llap{\pagenumber@size\thepage}}%
+      \def\@evenhead{%
+        \runninghead@size
+        \rlap{\pagenumber@size\thepage}%
+        \hfill
+        \expandafter\MakeUppercase\expandafter{\textsl{\leftmark}}%
+        }%
+      \def\@oddhead{%
+        \runninghead@size
+        \expandafter\MakeUppercase\expandafter{\textsl{\rightmark}}%
+        \hfill
+        \llap{\pagenumber@size\thepage}%
+        }%
 }%
 % Empty RH
 \def\ps@empty{\let\@mkboth\@gobbletwo%
@@ -366,7 +406,15 @@
 }
 
 
-\def\chaptermark#1{\markboth{\chaptername\ \thechapter. #1}{\chaptername\ \thechapter. #1}}
+%\def\chaptermark#1{\markboth{\chaptername\ \thechapter. #1}{\chaptername\ \thechapter. #1}}
+\def\chaptermark#1{%
+  \xdef\last@chapt@mark@title{#1}%
+  \markboth{\chaptername\ \thechapter. \last@chapt@mark@title}{%
+    \if.\last@sect@mark@title.\else
+      \thechapter.\the\c@section. \last@sect@mark@title
+    \fi
+    }%
+  }
 \let\sectionmark\@gobble
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% table, figure
