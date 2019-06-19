@@ -42,7 +42,7 @@
 %% Bug fixes and changes:
 %% 2006.09.27 - start 
 
-\def\iosfmt@version{2019/06/11}
+\def\iosfmt@version{2019/06/19}
 
 \NeedsTeXFormat{LaTeX2e}[1995/12/01]
 \ProvidesClass{ios-book}
