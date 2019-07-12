@@ -6,7 +6,7 @@
 %%
 %% Macros written by Vytas Statulevicius, VTeX, Lithuania
 %% for IOS Press, The Netherlands
-%% Please submit bugs or your comments to vytas@vtex.lt
+%% Please submit bugs or your comments to latex-support@vtex.lt
 %%
 %% You are free to use this class file as you see fit, provided 
 %% that you do not make changes to the file. 
@@ -42,12 +42,10 @@
 %% Bug fixes and changes:
 %% 2006.09.27 - start 
 
-\def\iosfmt@version{2019/06/19}
+\def\iosfmt@version{2019/07/12}
 
 \NeedsTeXFormat{LaTeX2e}[1995/12/01]
-\ProvidesClass{ios-book}
-              [\iosfmt@version, IOS Press 'book' style (VS)]
-
+\ProvidesClass{ios-book}[\iosfmt@version, IOS Press 'book' style (VS)]
 
 \PassOptionsToPackage{psamsfonts}{amssymb}
 \PassOptionsToPackage{cmex10}{amsmath}
@@ -281,6 +279,7 @@
   \vspace*{84\p@}%
   \bgroup
     %\centering
+    \gdef\last@sect@mark@title{}%  
     \setlength\parindent{0\p@}
     \bfseries
     \interlinepenalty\@M
@@ -352,7 +351,7 @@
   \ifx\sect@level@name\sect@level@section
     \xdef\last@sect@mark@title{#7}%
   \fi
-  \chaptermark{\last@chapt@mark@title}%
+  \markright{\if.\last@sect@mark@title.\else \thechapter.\the\c@section. \last@sect@mark@title\fi}%
   }
 
 % Format for the counter:
@@ -406,14 +405,9 @@
 }
 
 
-%\def\chaptermark#1{\markboth{\chaptername\ \thechapter. #1}{\chaptername\ \thechapter. #1}}
 \def\chaptermark#1{%
   \xdef\last@chapt@mark@title{#1}%
-  \markboth{\chaptername\ \thechapter. \last@chapt@mark@title}{%
-    \if.\last@sect@mark@title.\else
-      \thechapter.\the\c@section. \last@sect@mark@title
-    \fi
-    }%
+  \markboth{\chaptername\ \thechapter. \last@chapt@mark@title}{}%
   }
 \let\sectionmark\@gobble
 
@@ -643,6 +637,7 @@
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% table of contents
+\setcounter{tocdepth}{1}
 
 \renewcommand\@dotsep{10000}
 
@@ -691,12 +686,12 @@
 
 \def\nohyphen{\pretolerance=\@M \tolerance=\@M \hyphenpenalty=\@M \exhyphenpenalty=\@M}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% setattribute, getattribute, do@option@list
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% setpkgattr, getpkgattr, do@option@list
 
-\def\setattribute{\@ifnextchar[\@setattribute{\@setattribute[]}}
-\def\@setattribute[#1]#2#3#4{\expandafter\gdef\csname #2@#3\endcsname{#4}}
-\def\getattribute#1#2{\csname #1@#2\endcsname}
-\def\sep@key@value#1=#2/?/#3{\setattribute{#3}{#1}{#2}}
+\def\setpkgattr{\@ifnextchar[\@setpkgattr{\@setpkgattr[]}}
+\def\@setpkgattr[#1]#2#3#4{\expandafter\gdef\csname #2@#3\endcsname{#4}}
+\def\getpkgattr#1#2{\csname #1@#2\endcsname}
+\def\sep@key@value#1=#2/?/#3{\setpkgattr{#3}{#1}{#2}}
 \def\do@option@list#1#2{%
   \@for\curr@option:={#2}\do{%
     \expandafter\sep@key@value\curr@option/?/{#1}\relax
@@ -708,13 +703,13 @@
 \def\pubyear#1{\def\@pubyear{#1}}
 
 
-\setattribute{runninghead}{size} {\footnotesize}
-\setattribute{pagenumber} {size} {\footnotesize}
-\setattribute{publisher}  {text} {IOS Press}
-\setattribute{book}     {rights} {\textcopyright\ \@pubyear\ \@author. All rights reserved.}
+\setpkgattr{runninghead}{size} {\footnotesize}
+\setpkgattr{pagenumber} {size} {\footnotesize}
+\setpkgattr{publisher}  {text} {IOS Press}
+\setpkgattr{book}     {rights} {\textcopyright\ \@pubyear\ \@author. All rights reserved.}
 
-\setattribute{copyright}  {size} {\footnotesize\raggedright\itshape}
-\setattribute{copyright}{text}{
+\setpkgattr{copyright}  {size} {\footnotesize\raggedright\itshape}
+\setpkgattr{copyright}{text}{
    \@ifundefined{@title}  {}{\@title\\}%
    \@ifundefined{@author} {}{\@author\\}%
    \@ifundefined{@pubyear}{}{\publisher@text, \@pubyear\\}
