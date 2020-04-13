@@ -42,7 +42,7 @@
 %% Bug fixes and changes:
 %% 2006.09.27 - start 
 
-\def\iosfmt@version{2019/07/12}
+\def\iosfmt@version{2020/04/13}
 
 \NeedsTeXFormat{LaTeX2e}[1995/12/01]
 \ProvidesClass{ios-book}[\iosfmt@version, IOS Press 'book' style (VS)]
@@ -614,7 +614,10 @@
   \setcounter{subsection}{0}
   \appendtrue
   \def\@chapapp{App.\ }
-  \def\thechapter{\Alph{chapter}}}
+  \def\thechapter{\Alph{chapter}}%
+  \edef\chaptername{Appendix}%
+  \immediate\write\@auxout{\string\@writefile{toc}{\string\edef\string\chaptername{Appendix}}}%
+  }
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% thebibliography
