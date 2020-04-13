@@ -16,3 +16,6 @@ The following files are given in the repository (or directly in `.zip` archive):
 - Install LaTeX class file `ios-book.cls` into your TeX system;
 - Use the template file `ios-book-template.tex` to prepare your manuscript.
 
+## Bug reports
+
+Please submit bug report, issues or feature requests to `latex-support@vtex.lt`.
