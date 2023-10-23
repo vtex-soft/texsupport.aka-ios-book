@@ -42,7 +42,7 @@
 %% Bug fixes and changes:
 %% 2006.09.27 - start 
 
-\def\iosfmt@version{2020/04/13}
+\def\iosfmt@version{2023/10/23}
 
 \NeedsTeXFormat{LaTeX2e}[1995/12/01]
 \ProvidesClass{ios-book}[\iosfmt@version, IOS Press 'book' style (VS)]
@@ -344,7 +344,41 @@
 \xdef\last@chapt@mark@title{}
 \xdef\last@sect@mark@title{}
 \xdef\sect@level@section{section}
-\let\@sect@sav\@sect
+
+\def\@sect@sav#1#2#3#4#5#6[#7]#8{%
+  \ifnum #2>\c@secnumdepth
+    \let\@svsec\@empty
+  \else
+    \refstepcounter{#1}%
+    \protected@edef\@svsec{\@seccntformat{#1}\relax}%
+  \fi
+  \@tempskipa #5\relax
+  \ifdim \@tempskipa>\z@
+    \begingroup
+      #6{%
+        \@hangfrom{\hskip #3\relax\@svsec}%
+          \interlinepenalty \@M #8\@@par}%
+    \endgroup
+    \csname #1mark\endcsname{#7}%
+    \addcontentsline{toc}{#1}{%
+      \ifnum #2>\c@secnumdepth \else
+        \protect\numberline{\csname the#1\endcsname}%
+      \fi
+      #8}%
+  \else
+    \def\@svsechd{%
+      #6{\hskip #3\relax
+      \@svsec #8}%
+      \csname #1mark\endcsname{#7}%
+      \addcontentsline{toc}{#1}{%
+        \ifnum #2>\c@secnumdepth \else
+          \protect\numberline{\csname the#1\endcsname}%
+        \fi
+        #8}}%
+  \fi
+  \@xsect{#5}}
+
+%\let\@sect@sav\@sect
 \def\@sect#1#2#3#4#5#6[#7]#8{%
   \@sect@sav{#1}{#2}{#3}{#4}{#5}{#6}[#7]{#8}%
   \edef\sect@level@name{#1}%
@@ -676,6 +710,28 @@
       \penalty\@highpenalty
     \endgroup
   \fi}
+
+\def\@chapter[#1]#2{\ifnum \c@secnumdepth >\m@ne
+                       \if@mainmatter
+                         \refstepcounter{chapter}%
+                         \typeout{\@chapapp\space\thechapter.}%
+                         \addcontentsline{toc}{chapter}%
+                                   {\protect\numberline{\thechapter}#2}%
+                       \else
+                         \addcontentsline{toc}{chapter}{#2}%
+                       \fi
+                    \else
+                      \addcontentsline{toc}{chapter}{#2}%
+                    \fi
+                    \chaptermark{#1}%
+                    \addtocontents{lof}{\protect\addvspace{10\p@}}%
+                    \addtocontents{lot}{\protect\addvspace{10\p@}}%
+                    \if@twocolumn
+                      \@topnewpage[\@makechapterhead{#2}]%
+                    \else
+                      \@makechapterhead{#2}%
+                      \@afterheading
+                    \fi}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% support macros
